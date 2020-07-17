@@ -12,6 +12,8 @@ class HuffmanTree(sourceSymbol: Char, symbolCount: Int) {
   var parent: HuffmanTree = _
   var symbol = sourceSymbol
   var count = symbolCount
+  
+  def compare(that: HuffmanTree): Int = that.count.compareTo(this.count)
 }
 
 class QElement(symbol: Char, priorityEl: Int){
@@ -29,7 +31,7 @@ class HuffmanCodec {
     println(symbolFreqMap)
     
     // create a huffman node for each symbol and add to worklist 
-    val workList = new mutable.Queue[HuffmanTree]()
+    val workList = new mutable.PriorityQueue[HuffmanTree]()(Ordering.by(ht => ht.count))
     val symbolList: ListBuffer[HuffmanTree] = new ListBuffer()
     for((k,v) <- symbolFreqMap){
       val huffmanNode = new HuffmanTree(k,v)
@@ -49,7 +51,6 @@ class HuffmanCodec {
       right.parent = newHuffmanNode
       workList.enqueue(newHuffmanNode)
     }
-    
     
     var encodedMessage = encoder(symbolList)
     return encodedMessage
