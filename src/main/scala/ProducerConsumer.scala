@@ -1,8 +1,8 @@
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 
 object ProducerConsumer extends App{
-  case class Start(start: Int, queue: ActorRef, consumers: List[ActorRef])
-  case class PackagedCandy(n: Int, name: String, consumers: List[ActorRef])
+  case class Start(start: Int, queue: ActorRef, consumers: IndexedSeq[ActorRef])
+  case class PackagedCandy(n: Int, name: String, consumers: IndexedSeq[ActorRef])
   case class Candy(n: Int, name: String)
   case class NoMoreBonBon(message: String)
   val totalBonBons = 20
@@ -41,18 +41,24 @@ object ProducerConsumer extends App{
         if(num == totalBonBons - 1){
           context.system.terminate()
         }
-       
     }
   }
   
+  val numProducers = 5
+  val numConsumers = 3
   val system = ActorSystem("ProducerConsumer")
-  val producer1 = system.actorOf(Props[ProducerActor], "Producer1")
-  val producer2 = system.actorOf(Props[ProducerActor], "Producer2")
   val queue = system.actorOf(Props[QueueActor], "MessageQueue")
-  val consumer1 = system.actorOf(Props[ConsumerActor], "Consumer1")
-  val consumer2 = system.actorOf(Props[ConsumerActor], "Consumer2")
-  val consumerArray = List(consumer1, consumer2)
+  val producerArray = for( i <- 1 to numProducers) yield system.actorOf(Props[ProducerActor], s"Producer$i")
+  val consumerArray = for(i <- 1 to numConsumers) yield system.actorOf(Props[ConsumerActor], name = s"Consumer$i")
   
-  producer1 ! Start(0, queue, consumerArray)
-  producer2 ! Start(totalBonBons/2, queue, consumerArray)
+  producerArray.zipWithIndex foreach {
+    case(p, i) => {
+      if(i == producerArray.length - 1){
+        p ! Start(totalBonBons % producerArray.length, queue, consumerArray)
+      } else {
+        val range = totalBonBons / producerArray.length;
+        p ! Start(range * i, queue, consumerArray)
+      }
+    }
+  }
 }
