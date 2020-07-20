@@ -5,6 +5,8 @@ import scala.collection.mutable.{ListBuffer, Map}
 //huffman encoding is an  coding technique that is developed by 
 //David Huffman. It is a variable length encoding technique for compression.
 //It is based on leveraging the symbol frequency of a source languages alphabet. 
+
+// Huffman Tree will represent a node in the tree and the tree itself. 
 class HuffmanTree(val symbol: Char, val count: Int) {
   var left: HuffmanTree = _
   var right: HuffmanTree = _

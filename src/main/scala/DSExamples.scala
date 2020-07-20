@@ -1,7 +1,7 @@
 import datastructures.MyRational
 import datastructures.MySet
 
-// Examples to show how easy it is to implement datastructures with a rich API and minimal effort
+// Examples to show how simple it is to implement datastructures with a rich API and minimal effort
 // using traits. None of the called methods below will be implemented directory.
 object DSExamples {
   def main(args: Array[String]): Unit = {

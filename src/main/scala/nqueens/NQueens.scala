@@ -2,7 +2,7 @@ package nqueens
 
 //     N queens problem
 //     The objective is to place N queens on an NxN board such that 
-//     there are  no two queens are attacking each other. This means 
+//     there are no two queens are attacking each other. This means 
 //     no two queens are in the same row, the same column, or on the same diagonal.
 //
 //     The positions of the queens as a list of numbers 1..N. The indices correspond 
@@ -11,7 +11,7 @@ package nqueens
 //     column is in row 4, the queen in the second column is in row 2, etc.  Luckily, 
 //     the solution to the problem is fairly simple. Going through each column one at a time, 
 //     we need to check that there are no horizontal conflicting queens and that there are no 
-//     immediate queens to the upper right and lower right. 
+//     queens diagonally. 
 
 object NQueens {
   def remove(num: Int, list: List[Int]) = list diff List(num)
