@@ -1,7 +1,7 @@
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 
 object ProducerConsumer extends App{
-  case class Start(start: Int, queue: ActorRef, consumers: IndexedSeq[ActorRef])
+  case class Start(start: Int, end: Int, queue: ActorRef, consumers: IndexedSeq[ActorRef])
   case class PackagedCandy(n: Int, name: String, consumers: IndexedSeq[ActorRef])
   case class Candy(n: Int, name: String)
   case class NoMoreBonBon(message: String)
@@ -11,13 +11,14 @@ object ProducerConsumer extends App{
     val candies = List("Caramel", "Chocolate", "Lollipop", "Sucker")
     val randGenerator = scala.util.Random
     def receive = {
-      case Start(start, queue, consumers) => {
-        List.range(start,start + 10).foreach(
+      case Start(start, end, queue, consumers) => {
+        List.range(start,end + 1).foreach(
             index => {
               println(s"Candy Made by ${self.path.name}!")
               queue ! PackagedCandy(index, candies(randGenerator.nextInt(4)), consumers)
             }
         )
+        
       }
     }
   }
@@ -54,10 +55,14 @@ object ProducerConsumer extends App{
   producerArray.zipWithIndex foreach {
     case(p, i) => {
       if(i == producerArray.length - 1){
-        p ! Start(totalBonBons % producerArray.length, queue, consumerArray)
+        val range = totalBonBons / producerArray.length;
+        val start = range * i
+        val end = if(totalBonBons % producerArray.length > 0 ) totalBonBons % producerArray.length else (start + range)
+        p ! Start(start, end, queue, consumerArray)
       } else {
         val range = totalBonBons / producerArray.length;
-        p ! Start(range * i, queue, consumerArray)
+        val start = range * i
+        p ! Start(start, start + range, queue, consumerArray)
       }
     }
   }
